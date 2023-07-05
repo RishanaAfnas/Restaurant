@@ -1,0 +1,31 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require 'config.php';
+session_start();
+if(!empty($_POST)) //$_POST superglobal array is not empty, indicating that it has received a response from Razorpay.
+
+{
+    $order_id= $_SESSION['order_id'];
+    
+
+    //response from razorpay
+
+    $razorpay_order_id=$_POST['razorpay_order_id'];
+    // print_r($razorpay_order_id);
+    $razorpay_signature=$_POST['razorpay_signature'];
+    // print_r($razorpay_signature);
+    $razorpay_payment_id=$_POST['razorpay_payment_id'];
+    // print_r($razorpay_payment_id);
+
+    //Generate Server side Signature
+    $generated_signature=hash_hmac('sha256',$order_id ."|" .$razorpay_payment_id, API_SECRET);
+    if($generated_signature == $razorpay_signature){
+        echo "payment is successful";
+    }else{
+        echo "Invalid payment";
+    }
+
+}
+
+?>
