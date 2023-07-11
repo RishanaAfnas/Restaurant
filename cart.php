@@ -45,7 +45,7 @@ if(isset($_GET['removeId'])){
     $removeId=$_GET['removeId'];
     echo $removeId;
    
-    $sql="DELETE FROM cart WHERE id='$removeId'";
+    $sql="DELETE FROM carts WHERE id='$removeId'";
     $result = mysqli_query($conn, $sql);
     
     if ($result) {
@@ -133,7 +133,7 @@ if (mysqli_num_rows($result) > 0) {
      $productImage = $row['image'];
      $quantity = $row['quantity'];
      echo '<input type="hidden" name="productId[]" value="' . $productId . '">';
-     echo '<input type="hidden" name="quantity[]" value="' . $quantity . '">';
+    //  echo '<input type="hidden" name="quantity[]" value="' . $quantity . '">';
      echo '<input type="hidden" name="price[]" value="' . $productPrice . '">';?>
 
      
@@ -157,7 +157,7 @@ if (mysqli_num_rows($result) > 0) {
                            </td>
                           
  
-                            <td><input type="number" class="iquantity"  onchange="subTotal()" value='<?php echo $quantity?>' min='1'></td>
+                            <td><input type="number" class="iquantity" name="quantity[]" onchange="subTotal()" value='<?php echo $quantity?>' min='1'></td>
 
                             <td class="itotal" name="itotal"></td>
                             

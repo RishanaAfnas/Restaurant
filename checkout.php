@@ -46,6 +46,7 @@ if (isset($_POST['submit'])) {
     $userID= $row['user_id'];
     $total=$row['total'] ;
     $updatedTotal=$total + ($gtotal - $total);
+    
    
     $updateQuery="UPDATE `order` SET user_id='$userID',total='$updatedTotal' WHERE id='$id'";
     $updatedResult=mysqli_query($conn,$updateQuery);
@@ -60,6 +61,7 @@ if (isset($_POST['submit'])) {
 
 
   $quantity=$_POST['quantity'];
+ 
   $price=$_POST['price'];
   $productId=$_POST['productId'];
   $quantity = [$quantity];
@@ -86,11 +88,12 @@ if (isset($_POST['submit'])) {
     
      $productId = array($_POST['productId']);
      $productIds = $productId[0];
-     print_r($productIds);
-     echo "hi";
-     echo count($productIds);
-     echo "hi";
-   print_r($_POST);
+  //    print_r($productIds);
+  //    echo "hi";
+  //    echo count($productIds);
+  //    echo "hi";
+  //    echo "<pre>";
+  //  print_r($_POST);
     // Insert each product into the order_lines table
     for ($i = 0; $i < count($productIds); $i++) {
      
@@ -112,21 +115,41 @@ if (isset($_POST['submit'])) {
     $currentQuantity = implode(",", $currentQuantity);
   }   
 
-     echo "<pre>";
-      print_r($currentQuantity);
-      echo "<pre>";
-      print_r($currentPrice);
+    //  echo "<pre>";
+    //   print_r($currentQuantity);
+    //   echo "<pre> hi";
+    //   print_r($currentPrice);
 
-      echo "<pre>";      print_r($currentProductId);
+    //   echo "<pre>";      print_r($currentProductId);
+     
+       // Check if the order and product combination already exists
+    $checkQuery = "SELECT * FROM order_lines WHERE order_id = '$order_id' AND product_id = '$currentProductId'";
+    $checkResult = mysqli_query($conn, $checkQuery);
 
+    if(mysqli_num_rows($checkResult) == 0)
+    {
 
       $sqlQuery = "INSERT INTO order_lines (order_id, product_id, price, quantity) VALUES ('$order_id', '$currentProductId', '$currentPrice', '$currentQuantity')";
       $result=mysqli_query($conn, $sqlQuery);
-      if ($result) {
-        echo "Insertion successful<br>";
-      } else {
-        echo "Error in query: " . mysqli_error($conn) . "<br>";
-      }
+      // if ($result) {
+      //   echo "Insertion successful<br>";
+      // } else {
+      //   echo "Error in query: " . mysqli_error($conn) . "<br>";
+      // }
+    }
+    else {
+      // Combination already exists, skip insertion
+        $updateQuery = "UPDATE order_lines SET quantity = '$currentQuantity' WHERE order_id = '$order_id' AND product_id = '$currentProductId'";
+        $updateResult = mysqli_query($conn, $updateQuery);
+
+      //   if ($updateResult) {
+      //     echo "Update successful<br>";
+      // } else {
+      //     echo "Error in query: " . mysqli_error($conn) . "<br>";
+      // }
+
+     
+  }
       
       
     }
