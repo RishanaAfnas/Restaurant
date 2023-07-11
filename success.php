@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require 'config.php';
+
 session_start();
 if(!empty($_POST)) //$_POST superglobal array is not empty, indicating that it has received a response from Razorpay.
 
@@ -21,7 +22,8 @@ if(!empty($_POST)) //$_POST superglobal array is not empty, indicating that it h
     //Generate Server side Signature
     $generated_signature=hash_hmac('sha256',$order_id ."|" .$razorpay_payment_id, API_SECRET);
     if($generated_signature == $razorpay_signature){
-        echo "payment is successful";
+        header("Location:thankyou.php");
+        exit();
     }else{
         echo "Invalid payment";
     }

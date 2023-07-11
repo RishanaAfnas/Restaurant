@@ -156,7 +156,8 @@ span.price {
   .label_delivery{
     display:block;
     color:red;
-  }.containers {
+  }
+  .containers {
     display: block;
     position: relative;
     padding-left: 35px;

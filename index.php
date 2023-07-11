@@ -1,11 +1,30 @@
 <?php
 include('connection.php');
+
 session_start();
+// Generate a random user ID
+$userId = uniqid();
+
+// Store the user ID in a session variable
+$_SESSION['user_id'] = $userId;
+echo $userId;
+
+$sql2="SELECT id FROM users WHERE user_id='$userId'";
+$result=mysqli_query($conn,$sql2);
+if(mysqli_num_rows($result)==0)
+{
+    $sql="INSERT INTO users (user_id) VALUES ('$userId')";
+    mysqli_query($conn,$sql);
+
+}
+
+
+
 
 // Assuming you have established a database connection
 
 // Retrieve the count of rows from the cart table
-$sql = "SELECT COUNT(*) as count FROM cart";
+$sql = "SELECT COUNT(*) as count FROM carts";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
@@ -227,11 +246,11 @@ if ($result) {
                                                         $price = $row['price'];
 
                                                         $image = $row['image']; ?>
-                                                        <h6 style="color: #000;">All Item</h6>
+                                                        <!-- <h6 style="color: #000;">All Item</h6> -->
                                                         <li class="product text-center" data-image="uploads/products/thumb_image-not-found.png" data-name="Wayanadan pothu varattiyath" data-price="18.00" data-id="396">
                                                             <a data-id="396" class="showProductInfo">
                                                                 <div class="item list-item-full  pl-0 pr-0" id="search-results">
-                                                                <figure class="mb-0"> <img src="data:image/jpeg;base64,<?php echo base64_encode($image); ?>"></figure>
+                                                                <figure class="mb-0">  <a href="product-details.php?product_id=<?php echo $id; ?>"><img src="data:image/jpeg;base64,<?php echo base64_encode($image); ?>"></a></figure>
                                                                <div class="content-div">
                                                                         <h5 class="fw-600 text-white pull-left mb-1"></h5>
                                                                     </div><i class="ti-heart   bg-price price">Rs <span><?php echo $price; ?></span></i>

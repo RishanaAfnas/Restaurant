@@ -1,12 +1,17 @@
 <?php
 include ('connection.php');
+
 session_start();
+if ($_SESSION['order_completed']) {
+    header("Location: thankyou.php");
+    exit;
+  }
 if (isset($_POST['submit'])) {
     $selectedOption = $_POST['selectedOption'];
   
    
     if($selectedOption == 'CashOndelivery'){
-        header("Location:thankyou.html");
+        header("Location:thankyou.php");
         exit();
     }
     else{
@@ -23,8 +28,9 @@ use Razorpay\Api\Api;
 
 if (!empty($_POST['total'])) {
     $name = $_POST['name'];
-    $email = $_POST['email'];
+    // $email = $_POST['email'];
     $amount = $_POST['total'];
+    $mobile=$_POST['mobile'];
    
     $api = new Api(API_KEY, API_SECRET);// creates an instance of Api class from Razorpay SDk
     

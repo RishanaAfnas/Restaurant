@@ -1,10 +1,36 @@
 <?php
 include('connection.php');
+
 session_start();
+
+$userId = $_SESSION['user_id'];
+
+// Use the user ID for further processing
+// echo "User ID: " . $userId;
+
+
+$_SESSION['order_completed'] = false;
+$sql2="SELECT id FROM users WHERE user_id='$userId'";
+$result=mysqli_query($conn,$sql2);
+if(mysqli_num_rows($result) > 0)
+{
+  while($row=mysqli_fetch_assoc($result)){
+
+    $userId=$row['id'];
+    // echo $userId;
+  }
+}
+
+
+echo $userId;
+
 if(isset($_POST['submit']))
 {
    $product_id=$_POST['product_id'];
-   $sql="INSERT INTO cart (product_id) VALUES ('$product_id')";
+
+ 
+//    $sql="INSERT INTO carts (product_id,user_id) VALUES ('$product_id','$userId')";
+$sql = "INSERT IGNORE INTO carts (product_id, user_id) VALUES ('$product_id', '$userId')";
    if (mysqli_query($conn, $sql)) {
     // Insertion successful
    
@@ -14,6 +40,7 @@ if(isset($_POST['submit']))
     echo "Error adding product to cart: " . mysqli_error($conn);
 }
 }
+
 if(isset($_GET['removeId'])){
     $removeId=$_GET['removeId'];
     echo $removeId;
@@ -31,7 +58,7 @@ if(isset($_GET['removeId'])){
         echo "SQL Query: " . $sql;
     }
 }
-$sql = "SELECT COUNT(*) as count FROM cart";
+$sql = "SELECT COUNT(*) as count FROM carts";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
@@ -90,9 +117,10 @@ if ($result) {
                 <th>Subtotal</th>
             </tr>
             <?php 
-     $sql = "SELECT cart.id, cart.product_id, products.name, products.price, products.image
-     FROM cart
-     INNER JOIN products ON cart.product_id = products.id";
+     $sql = "SELECT carts.id,carts.product_id, products.name, products.price, products.image, COUNT(carts.product_id) AS quantity
+     FROM carts
+     INNER JOIN products ON carts.product_id = products.id
+     GROUP BY carts.product_id";
 
 $result = mysqli_query($conn, $sql);
 
@@ -102,7 +130,15 @@ if (mysqli_num_rows($result) > 0) {
      $productId = $row['product_id'];
      $productName = $row['name'];
      $productPrice = $row['price'];
-     $productImage = $row['image'];?>
+     $productImage = $row['image'];
+     $quantity = $row['quantity'];
+     echo '<input type="hidden" name="productId[]" value="' . $productId . '">';
+     echo '<input type="hidden" name="quantity[]" value="' . $quantity . '">';
+     echo '<input type="hidden" name="price[]" value="' . $productPrice . '">';?>
+
+     
+
+     <input type="hidden"   value="<?php echo $productId; ?>">
      
  
           
@@ -113,7 +149,7 @@ if (mysqli_num_rows($result) > 0) {
                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($productImage); ?>" width="100%"  id="productImg"> 
                                     <div>
                                         <p><?php echo $productName; ?></p>
-                                        <p>Price: $<?php echo $productPrice; ?> <input type="hidden" class="iprice" value="<?php echo $productPrice; ?>"></p>
+                                        <p>Price: $<?php echo $productPrice; ?> <input type="hidden" class="iprice" name="iprice" value="<?php echo $productPrice; ?>"></p>
                                         <br>
                                         <a href="cart.php?removeId=<?php echo $cartId ?>" style="color:red";>Remove</a>
                                     </div>
@@ -121,9 +157,10 @@ if (mysqli_num_rows($result) > 0) {
                            </td>
                           
  
-                            <td><input type="number" class="iquantity" onchange="subTotal()" value='1' min='1'></td>
+                            <td><input type="number" class="iquantity"  onchange="subTotal()" value='<?php echo $quantity?>' min='1'></td>
 
                             <td class="itotal" name="itotal"></td>
+                            
                                                 
                            
 
@@ -141,7 +178,7 @@ if (mysqli_num_rows($result) > 0) {
     </div>
     </div>
     <a href="index.php" class="btn" style="margin-left:30px;">continue shopping</a>
-    <input type="hidden" id="subTotal" name="itotal2" value="">
+    <input type="hidden" id="subTot" name="itotal2" value="">
     <input type="hidden" name="selectedOption" id="selectedOption" value=" " /><!-- <a href="" id="checkoutButton" class="btn" style="margin-left:30px;"> <input type="submit" value="check" > </a> -->
     <input class="btn btnCheckout" name="submit" type="submit" value="Checkout" style="border: none;font-size: 17px;font: bold;" onclick="return validateForm()">
     
@@ -175,8 +212,8 @@ if (mysqli_num_rows($result) > 0) {
         }
        
         gtotal.innerHTML='<i class="fas fa-rupee-sign"></i> ' + gt;
-        var subTotal=document.getElementById('subTotal');
-        subTotal.value=gt;
+        var subTot=document.getElementById('subTot');
+        subTot.value=gt;
          // Pass gtotal value to form.php
     var checkoutUrl = "form.php?amount=" + gt;
     var checkoutButton = document.getElementById('checkoutButton');

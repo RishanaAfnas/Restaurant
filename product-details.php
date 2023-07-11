@@ -1,7 +1,28 @@
 <?php
 include('connection.php');
+
 session_start();
-$sql = "SELECT COUNT(*) as count FROM cart";
+$userId = $_SESSION['user_id'];
+
+// Use the user ID for further processing
+// echo "User ID: " . $userId;
+$sql2="SELECT id FROM users WHERE user_id='$userId'";
+$result=mysqli_query($conn,$sql2);
+if(mysqli_num_rows($result) > 0)
+{
+  while($row=mysqli_fetch_assoc($result)){
+
+    $userId=$row['id'];
+    // echo $userId;
+  }
+}
+
+
+echo $userId;
+
+
+$_SESSION['order_completed'] = false;
+$sql = "SELECT COUNT(*) as count FROM carts";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
@@ -59,7 +80,10 @@ if ($result) {
 
       }
    
-}?>
+}
+
+
+?>
               <img src="data:image/jpeg;base64,<?php echo base64_encode($image); ?>" width="100%"  id="productImg"> 
               
             </div>
@@ -69,6 +93,7 @@ if ($result) {
                 <h4 class="price"><i class="fas fa-rupee-sign" style="color:#555;"></i> <?php echo $price;?> </h4>
                 <form  action="cart.php" method="post">
                 <input type="hidden" name="product_id" value="<?php echo $id; ?>">
+                <input type="hidden" name="user_id" value="<?php echo $userId; ?>">
                 <input type="submit"  name="submit" class="btn" value="Add To Cart" style="width: 50%";>
                 </form>
                 

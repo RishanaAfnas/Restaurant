@@ -1,6 +1,16 @@
 <?php
 include('connection.php');
+
 session_start();
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+if (isset($_SESSION['order_completed']) && $_SESSION['order_completed']) {
+  header("Location: thankyou.php");
+  exit;
+}
+$_SESSION['order_completed'] = false;
 
 // if(isset($_POST['submit'])){
 //   $selectedOption = $_POST['selectedOption'];
@@ -51,12 +61,12 @@ if (isset($_GET['param'])) {
                             <label for="fname"><i class="fa fa-user"></i> Full Name</label>
                             <input type="text" id="fname" name="name" placeholder="">
                             <label for="mobile"><i class="fa fa-mobile" aria-hidden="true"></i></i> Mobile</label>
-                            <input type="tel" id="mobile" name="email" placeholder="">
+                            <input type="tel" id="mobile" name="mobile" placeholder="">
                             <label for="fname"><i class="fa fa-user"></i> Amount</label>
                             <input type="text" id="fname" name="total" placeholder="" value="<?php echo $total; ?>">
                             <label for="fname" style="margin-bottom:25px;"><i class="fa fa-money" aria-hidden="true"></i> Select Payment Method</label>
                             <label class="containers">Cash On Delivery
-                                <input type="radio" checked="checked" name="paymentOption" value="CashOndelivery">
+                                <input type="radio"  name="paymentOption" value="CashOndelivery">
                                 <span class="checkmark"></span>
                             </label>
                             <label class="containers">Online Payment
@@ -75,7 +85,7 @@ if (isset($_GET['param'])) {
           <input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
         </label> -->
         <input type="hidden" name="selectedOption" id="selectedOption" value="" />
-          <input type="submit" value="Continue to checkout"name="submit" class="btn" onclick="return validateForm()">
+          <input type="submit" value="Confirm Order"name="submit" class="btn" onclick="return validateForm()">
                     
                 </form>
             </div>
