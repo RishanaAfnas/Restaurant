@@ -10,7 +10,7 @@ if(isset($_SESSION['userId'])){
 
  $userID =$_SESSION['userId'];
  echo $userID;
-}
+
 
 
 $sql2="SELECT id FROM users WHERE user_id='$userID'";
@@ -57,6 +57,7 @@ if ($result) {
     $cartItemCount = $row['count'];
 } else {
     $cartItemCount = 0;
+}
 }
 
 

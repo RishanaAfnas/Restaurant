@@ -25,7 +25,9 @@ session_start();
     
     $userId =$_SESSION['userId'];
     unset($_SESSION['userId']);
-    
+    session_unset();
+    session_destroy();
+    setcookie("cookie_name", "", time() - 1, "/");
     echo "Cart cleared and session destroyed successfully";
   
   // } else {
