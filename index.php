@@ -1,30 +1,55 @@
 <?php
+
 include('connection.php');
 
 session_start();
-// Generate a random user ID
-$userId = uniqid();
 
-// Store the user ID in a session variable
-$_SESSION['user_id'] = $userId;
-echo $userId;
+if(isset($_SESSION['userId'])){
 
-$sql2="SELECT id FROM users WHERE user_id='$userId'";
-$result=mysqli_query($conn,$sql2);
-if(mysqli_num_rows($result)==0)
-{
-    $sql="INSERT INTO users (user_id) VALUES ('$userId')";
-    mysqli_query($conn,$sql);
 
+
+ $userID =$_SESSION['userId'];
+ echo $userID;
 }
 
 
+$sql2="SELECT id FROM users WHERE user_id='$userID'";
+$result=mysqli_query($conn,$sql2);
 
 
-// Assuming you have established a database connection
+
+
+if(mysqli_num_rows($result)==0)
+{
+    $sql="INSERT INTO users (user_id) VALUES ('$userID')";
+    $result=mysqli_query($conn,$sql);
+    $sql2="SELECT id FROM users WHERE user_id='$userID'";
+    $result=mysqli_query($conn,$sql2);
+
+    while($row=mysqli_fetch_assoc($result)){
+
+        $userId=$row['id'];
+        echo $userId;
+    }
+    
+  
+
+    echo "inserted";
+    
+
+}
+else{
+    echo "not inserted";
+    while($row=mysqli_fetch_assoc($result)){
+
+        $userId=$row['id'];
+        echo $userId;
+    }
+}
+echo $userId;
 
 // Retrieve the count of rows from the cart table
-$sql = "SELECT COUNT(*) as count FROM carts";
+$sql = "SELECT COUNT(*) as count FROM carts WHERE user_id='$userId'";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
@@ -34,20 +59,18 @@ if ($result) {
     $cartItemCount = 0;
 }
 
-// Display the cart icon with the item count
+
 ?>
-
-
-
 
 <DOCTYPE html>
     <html lang="en-US">
 
     <head>
+       <!-- <script language="javascript" type="text/javascript">window.history.forward();</script> -->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="google" content="notranslate" />
-        <title>Silver Thalashery Restaurant | Tijara Smart Menu v3.0.8</title>
-        <meta name="description" content="Silver Thalashery Restaurant Musaffah Shabiya ME10, Abu Dhabi - United Arab Emirates,  WhatsApp : 056 422 5432 , Tel : 02 444 6702, 02 555 6702">
+        <title>Silver Thalashery Restaurant </title>
+       
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <link rel="icon" type="image/png" href="images/favicon.png">
 
@@ -343,7 +366,7 @@ if ($result) {
                                         <input type="hidden" id="spl_filter" value="">
                                         <div class="clearfix"></div>
                                         <div class="text-center">
-                                            <img id="loader" src="loader.svg">
+                                            <!-- <img id="loader" src="loader.svg"> -->
                                         </div>
 
 
@@ -368,16 +391,16 @@ if ($result) {
                         <div class="nav-content">
                             <ul>
                                 <!-- <li><a href="#" class=" nav-content-bttn cat_link_menu"  ><i class="ti-home"></i>Home</a></li> -->
-                                <li><a href="0" class="nav-content-bttn  allCat"><i class="fa fa-th-large" aria-hidden="true"></i>
+                                <li><a href="#" class="nav-content-bttn  allCat"><i class="fa fa-th-large" aria-hidden="true"></i>
                                         Categories
                                     </a></li>
 
-                                <li><a href="tel:02 444 6702" class="nav-content-bttn"><i class="fa fa-phone" aria-hidden="true"></i>
+                                <li><a href="tel:" class="nav-content-bttn"><i class="fa fa-phone" aria-hidden="true"></i>
                                         Call
                                     </a></li>
 
                                 <li class="shopping-cart"><a href="cart.php" class=" cart-count mt-1 nav-content-bttn nav-center showCartInfo"><i class="fa fa-shopping-cart" aria-hidden="true"></i><span id="cartStat"><?php echo $cartItemCount; ?></span></a></li>
-                                <li><a href="https://api.whatsapp.com/send?phone=971564225432" class="nav-content-bttn" data-tab="favorites"><i class="fa fa-whatsapp "></i>
+                                <li><a href="https://api.whatsapp.com/send?phone=" class="nav-content-bttn" data-tab="favorites"><i class="fa fa-whatsapp "></i>
                                         Whatsapp
                                     </a></li>
 
@@ -403,9 +426,7 @@ if ($result) {
                         <div class="col-sm-4 text-center pos-top">
                             <a href="#" class="logo d-block mt-1"><img src="images/logo-light-text.png" class="img-fluid"></a>
                         </div>
-                        <!-- <div class="col-sm-4 text-right pos-top">
-						<a href="#" class="cart-btn mt-1"><i class="ti-pen"></i><span>1</span></a>
-	                </div> -->
+                    
                     </div>
                 </header>
                 <ul class="nav-item ">

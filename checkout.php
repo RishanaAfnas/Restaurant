@@ -2,7 +2,8 @@
 include('connection.php');
 
 session_start();
-$userId = $_SESSION['user_id'];
+$userId =$_SESSION['userId'];
+ echo $userId;
 
 // Use the user ID for further processing
 // echo "User ID: " . $userId;
@@ -20,19 +21,24 @@ if(mysqli_num_rows($result) > 0)
 }
 
 
-// echo $userID;
+echo $userID;
 
 if ($_SESSION['order_completed']) {
-  header("Location: thankyou.php");
+  header("Location: thankyouu.php");
   exit;
 }
 $_SESSION['order_completed'] = false;
 
 if (isset($_POST['submit'])) {
   $selectedOption = $_POST['selectedOption'];
+  $cartId =$_POST['cartId'];
+  
   $total = $_POST['itotal2'];
 
   $gtotal = number_format($total, 2);
+ 
+
+ 
 
   // Check if an existing order exists for the user
   $orderQuery="SELECT * FROM `order` WHERE user_id='$userID'";
@@ -43,19 +49,24 @@ if (isset($_POST['submit'])) {
      // An existing order exists, update the products and total
      $row=mysqli_fetch_assoc($orderResult);
      $id=$row['id'];
-    $userID= $row['user_id'];
+     $userID= $row['user_id'];
     $total=$row['total'] ;
     $updatedTotal=$total + ($gtotal - $total);
+    $cartId =$_POST['cartId'];
+    $serviceMode=$_POST['selectedOption'];
+   
     
    
-    $updateQuery="UPDATE `order` SET user_id='$userID',total='$updatedTotal' WHERE id='$id'";
+    
+   
+    $updateQuery="UPDATE `order` SET user_id='$userID',cart_id='$cartId',total='$updatedTotal',service_mode='$serviceMode' WHERE id='$id'";
     $updatedResult=mysqli_query($conn,$updateQuery);
 
      
   }
   else{
 
-     $sql="INSERT INTO `order` (user_id,total) VALUES ('$userID','$gtotal')";
+     $sql="INSERT INTO `order` (user_id,cart_id,total,service_mode) VALUES ('$userID','$cartId','$gtotal','$selectedOption')";
      mysqli_query($conn, $sql);
   }
 
@@ -64,9 +75,11 @@ if (isset($_POST['submit'])) {
  
   $price=$_POST['price'];
   $productId=$_POST['productId'];
+  $cartId =$_POST['cartId'];
   $quantity = [$quantity];
   $price = [$price];
   $productId = [$productId];
+  $cartId=[$cartId];
   
 
   
@@ -101,11 +114,13 @@ if (isset($_POST['submit'])) {
       $currentProductId = $_POST['productId'][$i];
     $currentPrice = $_POST['price'][$i];
     $currentQuantity = $_POST['quantity'][$i];
+    // $currentcartId = $_POST['cartId'][$i];
     
      // Convert array values to strings if needed
   if (is_array($currentProductId)) {
     $currentProductId = implode(",", $currentProductId);
   }
+  
 
   if (is_array($currentPrice)) {
     $currentPrice = implode(",", $currentPrice);
@@ -113,7 +128,10 @@ if (isset($_POST['submit'])) {
 
   if (is_array($currentQuantity)) {
     $currentQuantity = implode(",", $currentQuantity);
-  }   
+  } 
+  // if (is_array($currentcartId)) {
+  //   $currentcartId = implode(",", $currentcarttId);
+  // }  
 
     //  echo "<pre>";
     //   print_r($currentQuantity);

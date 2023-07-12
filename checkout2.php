@@ -7,7 +7,7 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 if (isset($_SESSION['order_completed']) && $_SESSION['order_completed']) {
-  header("Location: thankyou.php");
+  header("Location: thankyouu.php");
   exit;
 }
 $_SESSION['order_completed'] = false;

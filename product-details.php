@@ -2,7 +2,12 @@
 include('connection.php');
 
 session_start();
-$userId = $_SESSION['user_id'];
+// $userId = $_SESSION['user_id'];
+// if(isset($_SESSION['userId'])){
+//   $userId=$_SESSION['userId'];
+//   echo $userId;
+$userId =$_SESSION['userId'];
+ echo $userId;
 
 // Use the user ID for further processing
 // echo "User ID: " . $userId;
@@ -13,16 +18,17 @@ if(mysqli_num_rows($result) > 0)
   while($row=mysqli_fetch_assoc($result)){
 
     $userId=$row['id'];
-    // echo $userId;
+    echo $userId;
   }
 }
+
 
 
 echo $userId;
 
 
 $_SESSION['order_completed'] = false;
-$sql = "SELECT COUNT(*) as count FROM carts";
+$sql = "SELECT COUNT(*) as count FROM carts WHERE user_id='$userId'";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {

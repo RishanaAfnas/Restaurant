@@ -3,13 +3,16 @@ include('connection.php');
 
 session_start();
 
-$userId = $_SESSION['user_id'];
+// $userId = $_SESSION['user_id'];
+$userId =$_SESSION['userId'];
+ echo $userId;
 
 // Use the user ID for further processing
 // echo "User ID: " . $userId;
 
 
 $_SESSION['order_completed'] = false;
+
 $sql2="SELECT id FROM users WHERE user_id='$userId'";
 $result=mysqli_query($conn,$sql2);
 if(mysqli_num_rows($result) > 0)
@@ -17,9 +20,10 @@ if(mysqli_num_rows($result) > 0)
   while($row=mysqli_fetch_assoc($result)){
 
     $userId=$row['id'];
-    // echo $userId;
+    echo $userId;
   }
 }
+
 
 
 echo $userId;
@@ -44,7 +48,9 @@ $sql = "INSERT IGNORE INTO carts (product_id, user_id) VALUES ('$product_id', '$
 if(isset($_GET['removeId'])){
     $removeId=$_GET['removeId'];
     echo $removeId;
-   
+    // $sql="DELETE FROM order WHERE cart_id='$removeId'";
+    // $result = mysqli_query($conn, $sql);
+
     $sql="DELETE FROM carts WHERE id='$removeId'";
     $result = mysqli_query($conn, $sql);
     
@@ -58,7 +64,7 @@ if(isset($_GET['removeId'])){
         echo "SQL Query: " . $sql;
     }
 }
-$sql = "SELECT COUNT(*) as count FROM carts";
+$sql = "SELECT COUNT(*) as count FROM carts WHERE user_id='$userId'";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
@@ -118,8 +124,9 @@ if ($result) {
             </tr>
             <?php 
      $sql = "SELECT carts.id,carts.product_id, products.name, products.price, products.image, COUNT(carts.product_id) AS quantity
-     FROM carts
+     FROM carts 
      INNER JOIN products ON carts.product_id = products.id
+     WHERE carts.user_id='$userId'
      GROUP BY carts.product_id";
 
 $result = mysqli_query($conn, $sql);
@@ -132,6 +139,8 @@ if (mysqli_num_rows($result) > 0) {
      $productPrice = $row['price'];
      $productImage = $row['image'];
      $quantity = $row['quantity'];
+     echo '<input type="hidden" name="cartId" value="' . $cartId . '">';
+
      echo '<input type="hidden" name="productId[]" value="' . $productId . '">';
     //  echo '<input type="hidden" name="quantity[]" value="' . $quantity . '">';
      echo '<input type="hidden" name="price[]" value="' . $productPrice . '">';?>
@@ -179,14 +188,17 @@ if (mysqli_num_rows($result) > 0) {
     </div>
     <a href="index.php" class="btn" style="margin-left:30px;">continue shopping</a>
     <input type="hidden" id="subTot" name="itotal2" value="">
-    <input type="hidden" name="selectedOption" id="selectedOption" value=" " /><!-- <a href="" id="checkoutButton" class="btn" style="margin-left:30px;"> <input type="submit" value="check" > </a> -->
+    <input type="hidden" name="selectedOption" id="selectedOption" value=" " />
+    <input type="hidden" id="cartItemCount" value="<?php echo $cartItemCount; ?>">
+
+   <!-- <a href="" id="checkoutButton" class="btn" style="margin-left:30px;"> <input type="submit" value="check" > </a> -->
     <input class="btn btnCheckout" name="submit" type="submit" value="Checkout" style="border: none;font-size: 17px;font: bold;" onclick="return validateForm()">
     
  </form>
  <div class="footer">
   <div class="cart-icon">
     <i class="fas fa-shopping-cart"></i>
-    <span class="cart-count"><?php echo $cartItemCount; ?></span>
+    <span class="cart-count" ><?php echo $cartItemCount; ?></span>
   </div>
 </div>
    
@@ -274,6 +286,8 @@ if (mysqli_num_rows($result) > 0) {
     </script>
 <script type="text/javascript">
     function validateForm() {
+      
+        
   var radios = document.getElementsByName("delivery_option");
   var selectedValue = "";
 
@@ -286,6 +300,14 @@ if (mysqli_num_rows($result) > 0) {
 
   if (selectedValue === "") {
     alert("Please select a delivery option.");
+    return false;
+  }
+  // Get the number of items in the cart.
+  var cartItemCount = document.getElementById("cartItemCount").value;
+
+  // If the cart is empty, show an alert.
+  if (cartItemCount == 0) {
+    alert("Cart is empty.");
     return false;
   }
 
